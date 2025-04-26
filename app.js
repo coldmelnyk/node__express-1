@@ -1,17 +1,20 @@
 const express = require("express");
+const bodyParser = require("body-parser");
+const path = require("path");
 
 const app = express();
 
-app.get("/favicon.ico", (req, res) => res.status(204));
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
-app.use('/add-product', (req, res, next) => {
-  console.log("Add-product middleware");
-  res.send("<h1>The add product page</h1>");
-});
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "public")));
 
-app.use('/', (req, res, next) => {
-  console.log("In second middleware");
-  res.send("<h1>Hello from Express.js</h1>");
+app.use("/admin", adminRoutes);
+app.use(shopRoutes);
+
+app.use((req, res, next) => {
+  res.status(404).sendFile(path.join(__dirname, "views", "not-found.html"));
 });
 
 app.listen(3030);
