@@ -8,19 +8,16 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", "views");
 
-const adminData = require("./routes/admin");
-const shopData = require("./routes/shop");
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
+const errorControllers = require("./controllers/error");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/admin", adminData.routes);
-app.use(shopData.routes);
+app.use("/admin", adminRoutes);
+app.use(shopRoutes);
 
-app.use((req, res, next) => {
-  res
-    .status(404)
-    .render("not-found", { pageTitle: "Page Not Found", path: req.url });
-});
+app.use(errorControllers.getNotFoundController);
 
 app.listen(3030);
