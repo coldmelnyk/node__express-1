@@ -4,6 +4,7 @@ const path = require("path");
 const rootPath = require("../utils/path");
 
 const pathToTheProducts = path.join(rootPath, "data", "products.json");
+const pathToTheCart = path.join(rootPath, "data", "cart.json");
 
 const getProductsFromFile = (callback) => {
   fs.readFile(pathToTheProducts, (error, fileContent) => {
@@ -15,9 +16,22 @@ const getProductsFromFile = (callback) => {
   });
 };
 
+const getProductsFromCartFile = (callback) => {
+  fs.readFile(pathToTheCart, (error, fileContent) => {
+    if (error) {
+      callback([]);
+    } else {
+      callback(JSON.parse(fileContent));
+    }
+  });
+};
+
 module.exports = class Product {
-  constructor(title) {
+  constructor(title, imageUrl, desc, price) {
     this.title = title;
+    this.imageUrl = imageUrl;
+    this.desc = desc;
+    this.price = price;
   }
 
   save() {
@@ -32,5 +46,9 @@ module.exports = class Product {
 
   static fetchAll(callback) {
     getProductsFromFile(callback);
+  }
+
+  static getCartProducts(callback) {
+    getProductsFromCartFile(callback);
   }
 };
