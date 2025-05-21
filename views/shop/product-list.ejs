@@ -13,6 +13,7 @@
         <header class="card__header">
           <h1 class="product__title"><%= product.title %></h1>
         </header>
+
         <div class="card__image">
           <img src="<%= product.imageUrl %>" alt="A Book" />
         </div>
@@ -23,9 +24,9 @@
         </div>
 
         <div class="card__actions">
-          <form action="/add-to-cart" method="POST">
-            <button type="submit" class="btn">Add to Cart</button>
-          </form>
+          <a class="btn" href="/products/<%= product.id %>">Details</a>
+
+          <%- include('../includes/add-to-cart.ejs', {product}) %>
         </div>
       </article>
       <% } %>

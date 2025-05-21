@@ -35,6 +35,7 @@ module.exports = class Product {
   }
 
   save() {
+    this.id = Math.random().toString();
     getProductsFromFile((products) => {
       products.push(this);
 
@@ -48,7 +49,25 @@ module.exports = class Product {
     getProductsFromFile(callback);
   }
 
+  static findById(id, callback) {
+    getProductsFromFile((products) => {
+      const productNeeded = products.find((product) => product.id === id);
+
+      callback(productNeeded);
+    });
+  }
+
   static getCartProducts(callback) {
     getProductsFromCartFile(callback);
+  }
+
+  static saveToCart(product) {
+    getProductsFromCartFile((products) => {
+      products.push(product);
+
+      fs.writeFile(pathToTheCart, JSON.stringify(products), (error) => {
+        console.log(error);
+      });
+    });
   }
 };
