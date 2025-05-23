@@ -2,41 +2,35 @@ const Product = require("../models/product");
 const Cart = require("../models/cart");
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
+  Product.findAll()
+    .then((products) => {
       res.render("shop/product-list", {
-        products: rows,
+        products,
         pageTitle: "All products",
         path: "/products",
       });
     })
-    .catch(() => {
-      res.render("shop/product-list", {
-        products: [],
-        pageTitle: "All products",
-        path: "/products",
-      });
-    });
+    .catch((error) => console.log(error));
 };
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
 
   Product.findById(prodId)
-    .then(([product]) => {
+    .then((product) => {
       res.render("shop/product-detail", {
-        pageTitle: `${product[0].title} details`,
+        pageTitle: `${product.title} details`,
         path: "/products",
-        product: product[0],
+        product: product,
       });
     })
     .catch((error) => console.log(error));
 };
 
 exports.getShop = (req, res, next) => {
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
-      const slicedProducts = rows.slice(0, 6);
+  Product.findAll()
+    .then((products) => {
+      const slicedProducts = products.slice(0, 6);
 
       res.render("shop/index", {
         products: slicedProducts,
@@ -44,13 +38,7 @@ exports.getShop = (req, res, next) => {
         path: "/",
       });
     })
-    .catch(() => {
-      res.render("shop/index", {
-        products: [],
-        pageTitle: "Home",
-        path: "/",
-      });
-    });
+    .catch((error) => console.log(error));
 };
 
 exports.getCart = (req, res, next) => {

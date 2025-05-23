@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const errorControllers = require("./controllers/error");
-const db = require("./utils/database");
+const sequelize = require("./utils/database");
 
 const app = express();
 
@@ -21,4 +21,7 @@ app.use(shopRoutes);
 
 app.use(errorControllers.getNotFoundController);
 
-app.listen(3030);
+sequelize
+  .sync()
+  .then(() => app.listen(3030))
+  .catch((error) => console.log(error));
