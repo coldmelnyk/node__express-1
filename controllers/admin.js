@@ -20,7 +20,9 @@ exports.postAddProduct = (req, res, next) => {
     imageUrl: imageUrl,
     description: desc,
   })
-    .then((result) => console.log(result))
+    .then((result) => {
+      res.redirect("/admin/products");
+    })
     .catch((error) => console.log(error));
 };
 
@@ -32,18 +34,22 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
 
-  Product.findById(productId, (product) => {
-    if (!product) {
-      return res.redirect("/");
-    }
+  Product.findById(productId)
+    .then((product) => {
+      if (!product) {
+        return res.redirect("/");
+      }
 
-    res.render("admin/edit-product", {
-      pageTitle: "Add Product",
-      path: "/admin/edit-product",
-      editing: editMode,
-      product,
+      res.render("admin/edit-product", {
+        pageTitle: "Add Product",
+        path: "/admin/edit-product",
+        editing: editMode,
+        product,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
     });
-  });
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -53,23 +59,38 @@ exports.postEditProduct = (req, res, next) => {
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
 
-  const updatedProduct = new Product(
-    productId,
-    updatedTitle,
-    updatedImageUrl,
-    updatedDesc,
-    updatedPrice
-  );
+  Product.findById(productId)
+    .then((product) => {
+      product.title = updatedTitle;
+      product.price = updatedPrice;
+      product.imageUrl = updatedImageUrl;
+      product.description = updatedDesc;
 
-  updatedProduct.save();
-  res.redirect("/admin/products");
+      return product.save();
+    })
+    .then((result) => {
+      res.redirect("/admin/products");
+
+      console.log("UPDATED PRODUCT");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 exports.postDeleteProduct = (req, res, next) => {
   const productId = req.body.productId;
 
-  Product.deleteById(productId);
-  res.redirect("/admin/products");
+  Product.findById(productId)
+    .then((product) => {
+      return product.destroy();
+    })
+    .then((result) => {
+      res.redirect("/admin/products");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 exports.getAdminProductsList = (req, res, next) => {
